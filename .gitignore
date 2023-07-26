@@ -1,0 +1,5 @@
+*.deb
+*.gz
+nic.txt
+intermediary.txt
+install.txt
