@@ -20,8 +20,8 @@ if [ -z "$TAK_ALIAS" ]; then
   TAK_ALIAS=${TAK_ALIAS:-$XTAK_ALIAS}
 fi
 
-if [ -z "$CERT_PASS" ]; then
-  read -p "What is the certificate passkeys? " CERT_PASS
+if [ -z "$CERTPASS" ]; then
+  read -p "What is the certificate passkeys? " CERTPASS
 fi
 
 NIC=$(<nic.txt)
