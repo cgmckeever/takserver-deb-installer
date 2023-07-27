@@ -20,6 +20,10 @@ if [ -z "$TAK_ALIAS" ]; then
   TAK_ALIAS=${TAK_ALIAS:-$XTAK_ALIAS}
 fi
 
+if [ -z "$CERT_PASS" ]; then
+  read -p "What is the certificate passkeys? " CERT_PASS
+fi
+
 NIC=$(<nic.txt)
 EXT_IP=$(ip addr show $NIC | grep -m 1 "inet " | awk '{print $2}' | cut -d "/" -f1)
 
@@ -53,38 +57,38 @@ for ((i=1; i<=$CLIENT_COUNT;i++)); do
   cp /opt/tak/certs/files/itak-server-qr.png /opt/tak/certs/files/clients/$USERNAME/itak-server-qr.png
 
   tee /opt/tak/certs/files/clients/$USERNAME/manifest.xml >/dev/null << EOF
-  <MissionPackageManifest version="2">
-  <Configuration>
-  <Parameter name="uid" value="bcfaa4a5-2224-4095-bbe3-fdaa22a82741"/>
-  <Parameter name="name" value="${USERNAME}-${TAK_ALIAS}-DP"/>
-  <Parameter name="onReceiveDelete" value="true"/>
-  </Configuration>
-  <Contents>
-  <Content ignore="false" zipEntry="certs\server.pref"/>
-  <Content ignore="false" zipEntry="certs\\${TRUSTSTORE}"/>
-  <Content ignore="false" zipEntry="certs\\${USERNAME}.p12"/>
-  </Contents>
-  </MissionPackageManifest>
+<MissionPackageManifest version="2">
+<Configuration>
+<Parameter name="uid" value="bcfaa4a5-2224-4095-bbe3-fdaa22a82741"/>
+<Parameter name="name" value="${USERNAME}-${TAK_ALIAS}-DP"/>
+<Parameter name="onReceiveDelete" value="true"/>
+</Configuration>
+<Contents>
+<Content ignore="false" zipEntry="certs\server.pref"/>
+<Content ignore="false" zipEntry="certs\\${TRUSTSTORE}"/>
+<Content ignore="false" zipEntry="certs\\${USERNAME}.p12"/>
+</Contents>
+</MissionPackageManifest>
 EOF
 
 
   tee /opt/tak/certs/files/clients/$USERNAME/server.pref >/dev/null << EOF
-  <?xml version='1.0' encoding='ASCII' standalone='yes'?>
-  <preferences>
-    <preference version="1" name="cot_streams">
-      <entry key="count" class="class java.lang.Integer">1</entry>
-      <entry key="description0" class="class java.lang.String">${USERNAME}-${TAK_ALIAS}</entry>
-      <entry key="enabled0" class="class java.lang.Boolean">true</entry>
-      <entry key="connectString0" class="class java.lang.String">${EXT_IP}:$TAK_COT_PORT:ssl</entry>
-    </preference>
-    <preference version="1" name="com.atakmap.app_preferences">
-      <entry key="displayServerConnectionWidget" class="class java.lang.Boolean">true</entry>
-      <entry key="caLocation" class="class java.lang.String">cert/$TRUSTSTORE</entry>
-      <entry key="caPassword" class="class java.lang.String">$CERTPASS</entry>
-      <entry key="clientPassword" class="class java.lang.String">$CERTPASS</entry>
-      <entry key="certificateLocation" class="class java.lang.String">cert/${USERNAME}.p12</entry>
-    </preference>
-  </preferences>
+<?xml version='1.0' encoding='ASCII' standalone='yes'?>
+<preferences>
+  <preference version="1" name="cot_streams">
+    <entry key="count" class="class java.lang.Integer">1</entry>
+    <entry key="description0" class="class java.lang.String">${USERNAME}-${TAK_ALIAS}</entry>
+    <entry key="enabled0" class="class java.lang.Boolean">true</entry>
+    <entry key="connectString0" class="class java.lang.String">${EXT_IP}:$TAK_COT_PORT:ssl</entry>
+  </preference>
+  <preference version="1" name="com.atakmap.app_preferences">
+    <entry key="displayServerConnectionWidget" class="class java.lang.Boolean">true</entry>
+    <entry key="caLocation" class="class java.lang.String">cert/$TRUSTSTORE</entry>
+    <entry key="caPassword" class="class java.lang.String">$CERTPASS</entry>
+    <entry key="clientPassword" class="class java.lang.String">$CERTPASS</entry>
+    <entry key="certificateLocation" class="class java.lang.String">cert/${USERNAME}.p12</entry>
+  </preference>
+</preferences>
 EOF
 
   cd /opt/tak/certs/files/clients/${USERNAME}/
