@@ -46,7 +46,6 @@ for ((i=1; i<=$CLIENT_COUNT;i++)); do
 
   # Make a folder per user
   #
-  rm -rf /opt/tak/certs/files/clients/
   mkdir -p /opt/tak/certs/files/clients/$USERNAME
 
   #Copy over client certs
