@@ -1,33 +1,57 @@
 # takserver-deb-installer
 
+## Prerequisites
+
+- Ubuntu 20.04 or 22.04
+
+***If you are setting up a FQDN for SSL, make sure you already have your DNS entry (A Record) setup to point your server IP to the domain name you want the server hosted at.***
+
 ## First:
+
 - Download the .deb installer from tak.gov
 - Upload to Google Drive
 - Share the file, set share permissions to "anyone with the link"
-- Get the sharing link, you will need the file id during the script install
+- Get the sharing link, you will need the FILE-ID during the script install
 
-```https://drive.google.com/file/d/<FILE ID STRING HERE>/view?usp=sharing```
-
-*** If you are setting up a FQDN for SSL, make sure you already have your DNS entry (A Record) setup to point your server IP to the domain name you want the server hosted at. ***
+```
+https://drive.google.com/file/d/<FILE-ID STRING HERE>/view?usp=sharing
+```
 
 ## Second:
 
-- Login as root user to your install target machine
+- Login as `root` user to your install target machine
+- Install packages
+
+```
+apt install -y git
+```
+
+- See `Note` below about Firewalls
 - Download and Run the install script with the command below
 
-```cd /tmp/ && git clone https://github.com/atakhq/takserver-deb-installer.git && cd ./takserver-deb-installer && sudo chmod +x install-deb.sh && . install-deb.sh```
+```
+cd /tmp/; \
+git clone https://github.com/atakhq/takserver-deb-installer.git; \
+cd takserver-deb-installer/scripts/; \
+sudo chmod +x *.sh
+```
 
+- Start the install
+
+```
+./start.sh
+```
 
 ## What the script does:
 
-- creates ubuntu user 'tak' with random 15char password to install the service under
+- creates ubuntu user `tak` with random 15char password to install the service under
 - installs takserver and enables the service to run at startup on reboots
 - disables insecure ports in CoreConfig.xml
 - configures certificate enrollment
 - Optional: 
     - Configure FQDN for seamless cert enrollment and no SSL warnings in browser
     - Setup simple-rtsp-server for video streaming
-    - Additional user connection datapackage creation
+    - Additional user connection data package creation
 
 - Instruction at the end with link to admin login with random gen password
 
@@ -38,12 +62,38 @@
 
 If you encounter this error: 
 
-```Waiting for cache lock: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process XXXXXX (unattended-upgr) ```
+```
+Waiting for cache lock: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process XXXXXX (unattended-upgr)
+```
 
 Open a new SSH terminal, and fire this command to remove the apt upgrade lock - REPLACE XXXXXX with the process ID shown in the error
 
-```sudo kill -9 XXXXXX```
+`sudo kill -9 XXXXXX`
 
+### Basic UFW Firewall
+
+```
+sudo apt install ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow 8089
+sudo ufw allow 8443
+sudo ufw allow 8446
+sudo ufw enable
+```
+
+- For LetsEncrypt Enrollment
+
+```
+sudo ufw allow 80
+```
+
+
+## Changelog:
+
+- 7/26/2023
+  - Broke out scripts to be more modular (cana run client credential script separately)
 
 - 5/1/2023
   - Minor changes to improve stability on some people reporting issues with cert gen step looping (added sudo to script commands and exported cert meta values if sed failed to update the config file)
@@ -63,5 +113,6 @@ Open a new SSH terminal, and fire this command to remove the apt upgrade lock - 
   - rtsp-simple-server installer prompt added
 
 ## To Do:
+
 - UFW
 
